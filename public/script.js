@@ -40,7 +40,7 @@ sourceTextArea.addEventListener('input', (event) => {
             const url = '/detectLangs'; // node 서버의 특정 url주소
         
             xhr.onreadystatechange = () => {
-                if (xhr.readyState == 4 & xhr.status == 200) {
+                if (xhr.readyState == 4 && xhr.status == 200) {
         
                     // 서버의 응답 결과 확인(responseText : 응답에 포함된 텍스트)
                     // console.log(typeof xhr.responseText);
@@ -54,7 +54,13 @@ sourceTextArea.addEventListener('input', (event) => {
         
                     const result = parseJsonToObject['message']['result']; // ?
         
-        
+                    const options = sourceSelect.options;
+
+                    for(let i = 0; i< sourceSelect.length ; i++){
+                        if(options[i].value === result['srcLangType']){
+                            sourceSelect.selectedIndex = i;
+                        }
+                    }
                     // 번역된 텍스트를 결과화면에 입력
                     targetTextArea.value = result['translatedText'];
         
@@ -62,11 +68,21 @@ sourceTextArea.addEventListener('input', (event) => {
                     // console.log(`응답 헤더 : ${xhr.getAllResponseHeaders()}`);
                 }
             };
-        
+            
+            /**
+             *  xhr.addEventListener('load', () =>{
+             *  if(xhr.status == 200){
+             *  //내부 코드는 동일.
+             * }
+             * })
+             */
+            
+
+
             xhr.open("POST", url);
         
-            // 서버에 보내는 요청 데이터의 형식이 json 형식임을 명시.
-            xhr.setRequestHeader("Content-type", "application/json");
+            // 서버에 보내는 요청 데이터의 형식이 json 형식임을 명시. 이렇게 말해줘야지 server에서 받았을 때 어떤 것으로 변환할지 암.
+            xhr.setRequestHeader("Content-type", "application/json"); 
         
             const requestData = { // typeof : object
                 text,
@@ -74,7 +90,7 @@ sourceTextArea.addEventListener('input', (event) => {
             };
         
             // JSON(Javascript Object notation)의 타입은 ? string
-            // 내장모듈 JSON 활용.
+            // 내장모듈 JSON 활용. "['a','b','c']"
             // 서버에 보낼 데이터를 문자열화 시킴.
             jsonToString = JSON.stringify(requestData);
             // console.log(typeof jsonToString); // type: string
